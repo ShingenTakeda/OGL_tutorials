@@ -37,7 +37,7 @@ float angle(const Vector2 &a, const Vector2 &b)
 float magnitude(const Vector2 &v)
 {
   float len_sqr = v.x * v.x + v.y * v.y;
-  if(len_sqr < FLT_EPSILON)
+  if(len_sqr < VEC_EPSILON)
   {
     return 0.0f;
   }
@@ -83,34 +83,74 @@ float cross(const Vector2 &a , const Vector2 &b)
   return ((a.x * b.x) - (a.y * b.y));
 }
 
-Vector2 project(const Vector2 &length, const Vector2 &direction)
+Vector2 project(const Vector2 &a, const Vector2 &b)
 {
-  float magBsq = magnitude(direction);
-  if(magBsq < FLT_EPSILON)
+  float magBsq = magnitude(b);
+  if(magBsq < VEC_EPSILON)
   {
     return Vector2();
   }
 
-  float scale = dot(length, direction) / magBsq;
-  return direction * scale;
+  float scale = dot(a, b) / magBsq;
+  return b * scale;
 }
 
-Vector2 perpendicular(const Vector2 &length, const Vector2 &direction)
+Vector2 perpendicular(const Vector2 &a, const Vector2 &b)
 {
-  return length - project(length, direction);
+  return a - project(a, b);
 }
 
-Vector2 reflection(const Vector2 &v, const Vector2 &normal)
+Vector2 reflection(const Vector2 &a, const Vector2 &b)
 {
-  float magBsq = magnitude(normal);
-  if(magBsq < FLT_EPSILON)
+  float magBsq = magnitude(b);
+  if(magBsq < VEC_EPSILON)
   {
     return 0;
   }
 
-  float scale = dot(v, normal) / magBsq;
-  Vector2 proj = normal * (scale * 2);
-  return  v - normal;
+  float scale = dot(a, b) / magBsq;
+  Vector2 proj = b * (scale * 2);
+  return a - b;
+}
+
+Vector2 lerp(const Vector2 &s, const Vector2 &e, float t)
+{
+  return Vector2
+  (
+    s.x + (e.x - s.x) * t,
+    s.y + (e.y - s.y) * t
+  );
+}
+
+Vector2 slerp(const Vector2 &s, const Vector2 &e, float t)
+{
+  if(t < 0.01f)
+  {
+    return lerp(s, e, t);
+  }
+
+  Vector2 from = normal(s);
+  Vector2 to = normal(e);
+  
+  float theta = angle(s, e);
+  float sin_theta = sinf(theta);
+
+  float a = sinf((1.0f - t) * theta) / sin_theta;
+  float b = sinf(t * sin_theta) / sin_theta;
+
+  return from * a + to * b;
+
+}
+
+Vector2 nlerp(const Vector2 &s, const Vector2 &e, float t)
+{
+  Vector2 linear
+  (
+    s.x + (e.x - s.x) * t,
+    s.y + (e.y - s.y) * t
+  );
+
+  return normal(linear);
 }
 
 bool operator == (const Vector2 &a, const Vector2 &b)
@@ -194,7 +234,7 @@ float angle(const Vector3 &a, const Vector3 &b)
 {
   float sqMagL = a.x * a.x + a.y * a.y + a.z * a.z;
   float sqMagR = b.x * b.x + b.y * b.y + b.z * b.z;
-  if (sqMagL < FLT_EPSILON || sqMagR < FLT_EPSILON) 
+  if (sqMagL < VEC_EPSILON || sqMagR < VEC_EPSILON) 
   {
     return 0.0f;
   }
@@ -205,7 +245,7 @@ float angle(const Vector3 &a, const Vector3 &b)
 float magnitude(const Vector3 &v)
 {
   float len_sqr = v.x * v.x + v.y * v.y + v.z * v.z;
-  if(len_sqr < FLT_EPSILON)
+  if(len_sqr < VEC_EPSILON)
   {
     return 0.0f;
   }
@@ -221,7 +261,7 @@ float magnitude_sqr(const Vector3 &v)
 void normalize(Vector3 &v)
 {
   float len_sqr = v.x * v.x + v.y * v.y + v.z * v.z;
-  if(len_sqr < FLT_EPSILON)
+  if(len_sqr < VEC_EPSILON)
   {
     return ;
   }
@@ -236,7 +276,7 @@ void normalize(Vector3 &v)
 Vector3 normal(const Vector3 &v)
 {
   float len_sqr = v.x * v.x + v.y * v.y + v.z * v.z;
-  if(len_sqr < FLT_EPSILON)
+  if(len_sqr < VEC_EPSILON)
   {
     return v;
   }
@@ -276,19 +316,68 @@ Vector3 cross(const Vector3 &a, const Vector3 &b)
 );
 }
 
-Vector3 project(const Vector3 &length, const Vector3 &direction)
+Vector3 project(const Vector3 &a, const Vector3 &b)
 {
+  float mgs_bsq = magnitude(b);
+  if(mgs_bsq < VEC_EPSILON)
+  {
+    return Vector3();
+  }
+
+  float scale = dot(a,b) / mgs_bsq;
+  return b * scale;
+}
+
+Vector3 perpendicular(const Vector3 &a, const Vector3 &b)
+{
+  return a - project(a, b);
+}
+
+Vector3 reflection(const Vector3 &a, const Vector3 &b)
+{
+  Vector3 proj = project(a, b);
+  return a - proj;
+}
+
+Vector3 lerp(const Vector3 &s, const Vector3 &e, float t)
+{
+  return Vector3
+  (
+    s.x + (e.x - s.x) * t,
+    s.y + (e.y - s.y) * t,
+    s.z + (e.z - s.z) * t
+  );
+}
+
+Vector3 slerp(const Vector3 &s, const Vector3 &e, float t)
+{
+  if(t < 0.01f)
+  {
+    return lerp(s, e, t);
+  }
+
+  Vector3 from = normal(s);
+  Vector3 to = normal(e);
   
+  float theta = angle(s, e);
+  float sin_theta = sinf(theta);
+
+  float a = sinf((1.0f - t) * theta) / sin_theta;
+  float b = sinf(t * sin_theta) / sin_theta;
+
+  return from * a + to * b;
 }
 
-Vector3 perpendicular(const Vector3 &lenth, const Vector3 &direction)
+Vector3 nlerp(const Vector3 &s, const Vector3 &e, float t)
 {
+  Vector3 linear
+  (
+    s.x + (e.x - s.x) * t,
+    s.y + (e.y - s.y) * t,
+    s.z + (e.z - s.z) * t
+  );
 
-}
-
-Vector3 reflection(const Vector3 &v, const Vector3 &normal)
-{
-
+  return normal(linear);
 }
 
 bool operator == (const Vector3 &a, const Vector3 &b)

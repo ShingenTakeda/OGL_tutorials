@@ -88,10 +88,14 @@ Vector2 unit_vector(const Vector2 &v);
 float dot(const Vector2 &a, const Vector2 &b);
 float cross(const Vector2 &a, const Vector2 &b);
 
-Vector2 project(const Vector2 &length, const Vector2 &direction);
-Vector2 perpendicular(const Vector2 &lenth, const Vector2 &direction);
+Vector2 project(const Vector2 &a, const Vector2 &b);
+Vector2 perpendicular(const Vector2 &a, const Vector2 &b);
 
-Vector2 reflection(const Vector2 &v, const Vector2 &normal);
+Vector2 reflection(const Vector2 &a, const Vector2 &b);
+
+Vector2 lerp(const Vector2 &s, const Vector2 &e, float t);
+Vector2 slerp(const Vector2 &s, const Vector2 &e, float t);
+Vector2 nlerp(const Vector2 &s, const Vector2 &e, float t);
 
 bool operator == (const Vector2 &a, const Vector2 &b);
 bool operator != (const Vector2 &a, const Vector2 &b);
@@ -127,10 +131,14 @@ Vector3 unit_vector(const Vector3 &v);
 float dot(const Vector3 &a, const Vector3 &b);
 Vector3 cross(const Vector3 &a, const Vector3 &b);
 
-Vector3 project(const Vector3 &length, const Vector3 &direction);
-Vector3 perpendicular(const Vector3 &length, const Vector3 &direction);
+Vector3 project(const Vector3 &a, const Vector3 &b);
+Vector3 perpendicular(const Vector3 &a, const Vector3 &b);
 
-Vector3 reflection(const Vector3 &v, const Vector3 &normal);
+Vector3 reflection(const Vector3 &a, const Vector3 &b);
+
+Vector3 lerp(const Vector3 &s, const Vector3 &e, float t);
+Vector3 slerp(const Vector3 &s, const Vector3 &e, float t);
+Vector3 nlerp(const Vector3 &s, const Vector3 &e, float t);
 
 bool operator == (const Vector3 &a, const Vector3 &b);
 bool operator != (const Vector3 &a, const Vector3 &b);
