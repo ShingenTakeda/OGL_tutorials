@@ -7,6 +7,11 @@ target("common")
    add_files("common/*.c")
    add_packages("glfw", "glew")
 
+target("math")
+   set_kind("static")
+   add_includedirs("math/")
+   add_files("math/*.cpp")
+
 target("hello_triangle")
     set_kind("binary")
     add_includedirs("hello_triangle/", "common/")

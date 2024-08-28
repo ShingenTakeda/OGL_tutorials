@@ -159,6 +159,11 @@ int main()
 
   glLinkProgram(shader_program);
 
+
+  glEnable( GL_CULL_FACE );
+  glCullFace( GL_BACK );
+  glFrontFace( GL_CW );
+
   while(!glfwWindowShouldClose(window))
   {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
